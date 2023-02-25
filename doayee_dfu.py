@@ -157,6 +157,29 @@ class dfuTool(wx.Frame):
 
         vbox.Add(self.partitionDFUpanel,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
+        #                BEGIN SPIFFS DFU FILE GUI                 #
+        ################################################################
+        self.spiffsDFUpanel = wx.Panel(self.mainPanel)
+        self.spiffsDFUpanel.SetBackgroundColour('white')
+        spiffshbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.spiffsDFUCheckbox = wx.CheckBox(parent=self.spiffsDFUpanel,label="Spiffs data",size=(100,5))
+        spiffshbox.Add(self.spiffsDFUCheckbox,0,wx.EXPAND|wx.ALL,10)
+
+        self.spiffsAddrText = wx.TextCtrl(parent=self.spiffsDFUpanel, value='0x290000')
+        self.spiffsAddrText.SetEditable(False)
+        spiffshbox.Add(self.spiffsAddrText,1,wx.EXPAND|wx.ALL,10)
+
+        self.spiffs_pathtext = wx.TextCtrl(parent=self.spiffsDFUpanel,value = "No File Selected")
+        self.spiffs_pathtext.SetEditable(False)
+        spiffshbox.Add(self.spiffs_pathtext,20,wx.EXPAND|wx.ALL,10)
+
+        self.browseButton = wx.Button(parent=self.spiffsDFUpanel, label='Browse...')
+        self.browseButton.Bind(wx.EVT_BUTTON, self.on_spiffs_browse_button)
+        spiffshbox.Add(self.browseButton, 0, wx.ALL, 10)
+
+        vbox.Add(self.spiffsDFUpanel,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
+        ################################################################
         #                BEGIN BOOTLOADER DFU FILE GUI                 #
         ################################################################
         self.bootloaderDFUpanel = wx.Panel(self.mainPanel)
@@ -194,6 +217,7 @@ class dfuTool(wx.Frame):
         ################################################################
         self.appDFUpanel.SetSizer(hbox)
         self.partitionDFUpanel.SetSizer(partitionhbox)
+        self.spiffsDFUpanel.SetSizer(spiffshbox)
         self.bootloaderDFUpanel.SetSizer(bootloaderhbox)
         self.serialPanel.SetSizer(serialhbox)
         self.baudPanel.SetSizer(baudhbox)
@@ -215,6 +239,7 @@ class dfuTool(wx.Frame):
 
         self.APPFILE_SELECTED = False
         self.PARTITIONFILE_SELECTED = False
+        self.SPIFFSFILE_SELECTED = False
         self.BOOTLOADERFILE_SELECTED = False
 
         self.ESPTOOLMODE_ERASE = False
@@ -298,8 +323,17 @@ class dfuTool(wx.Frame):
             path = fileDialog.GetPath()
             self.PARTITIONFILE_SELECTED = True
 
-        self.partition_pathtext.SetLabel(os.path.abspath(path))
-        self.ESPTOOLARG_PARTITIONPATH=os.path.abspath(path)
+    def on_spiffs_browse_button(self, event):
+        with wx.FileDialog(self, "Open", "", "","*.bin", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+
+            path = fileDialog.GetPath()
+            self.SPIFFSFILE_SELECTED = True
+
+        self.spiffs_pathtext.SetValue(os.path.abspath(path))
+        self.spiffsDFUCheckbox.SetValue(True)
 
     def on_bootloader_browse_button(self, event):
         with wx.FileDialog(self, "Open", "", "","*.bin", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
@@ -407,7 +441,7 @@ class dfuTool(wx.Frame):
 def main():
 
     app = wx.App()
-    window = dfuTool(None, title='Doayee ESP32 DFU Tool')
+    window = dfuTool(None, title='ESP32 Flash Programming Tool')
     window.Show()
 
     app.MainLoop()
