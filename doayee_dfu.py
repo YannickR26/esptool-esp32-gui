@@ -107,6 +107,23 @@ class dfuTool(wx.Frame):
 
         vbox.Add(self.baudPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
+        #                   BEGIN PROJECT FILE SELECT GUI              #
+        ################################################################
+        self.projectPanel = wx.Panel(self.mainPanel)
+        projecthbox = wx.BoxSizer(wx.HORIZONTAL)
+
+        self.projectdesc = wx.StaticText(self.projectPanel,label = "Zip file:", style = wx.ALIGN_CENTRE)
+        projecthbox.Add(self.projectdesc, 0, wx.RIGHT, 10)
+
+        self.projectText = wx.TextCtrl(parent=self.projectPanel, value='No file selected')
+        self.projectText.SetEditable(False)
+        projecthbox.Add(self.projectText, 10)
+        self.projectButton = wx.Button(parent=self.projectPanel, label='Browse...')
+        self.projectButton.Bind(wx.EVT_BUTTON, self.on_project_browse_button)        
+        projecthbox.Add(self.projectButton, 0, wx.LEFT, 10)
+
+        vbox.Add(self.projectPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
+        ################################################################
         #                   BEGIN ERASE BUTTON GUI                     #
         ################################################################
         self.eraseButton = wx.Button(parent=self.mainPanel, label='Erase ESP')
@@ -220,6 +237,7 @@ class dfuTool(wx.Frame):
         self.spiffsDFUpanel.SetSizer(spiffshbox)
         self.bootloaderDFUpanel.SetSizer(bootloaderhbox)
         self.serialPanel.SetSizer(serialhbox)
+        self.projectPanel.SetSizer(projecthbox)
         self.baudPanel.SetSizer(baudhbox)
         self.mainPanel.SetSizer(vbox)
 
@@ -237,6 +255,7 @@ class dfuTool(wx.Frame):
         self.ESPTOOLARG_PARTITIONFLASH = False
         self.ESPTOOLARG_BOOTLOADERFLASH = False
 
+        self.PROJFILE_SELECTED = False
         self.APPFILE_SELECTED = False
         self.PARTITIONFILE_SELECTED = False
         self.SPIFFSFILE_SELECTED = False
@@ -293,14 +312,18 @@ class dfuTool(wx.Frame):
         t = threading.Thread(target=self.esptoolRunner, daemon=True)
         t.start()
 
-    def on_appFlash_check(self, event):
-        self.ESPTOOLARG_APPFLASH = self.appDFUCheckbox.GetValue()
+    def on_project_browse_button(self, event):
+        with wx.FileDialog(self, "Open", "", "","*.zip", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
 
-    def on_partitionFlash_check(self, event):
-        self.ESPTOOLARG_PARTITIONFLASH = self.partitionDFUCheckbox.GetValue()
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
 
-    def on_bootloaderFlash_check(self, event):
-        self.ESPTOOLARG_BOOTLOADERFLASH = self.bootloaderDFUCheckbox.GetValue()
+            path = fileDialog.GetPath()
+            self.PROJFILE_SELECTED = True
+
+        self.projectText.SetValue(os.path.abspath(path))
+        #load settings
+        self.load_options()
 
     def on_app_browse_button(self, event):
         with wx.FileDialog(self, "Open", "", "","*.bin", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
@@ -389,6 +412,52 @@ class dfuTool(wx.Frame):
             devices.append(port.device)
         return devices
 
+    # load project file and set up the options correctly
+    def load_options(self):
+        if not self.PROJFILE_SELECTED:
+            return
+
+        try:
+            with ZipFile(self.projectText.GetValue(), 'r') as zip:
+                print("Open zip file...")
+                zip.printdir()
+                zip.extractall('tmp')
+
+            # Search if firmware file exist
+            file = list(pathlib.Path('tmp').glob('firmware_*.bin'))
+            if len(file):
+                self.app_pathtext.SetValue(str(file[0].absolute()))
+                self.APPFILE_SELECTED = True
+                self.appDFUCheckbox.SetValue(True)
+
+            # Search if partitions file exist
+            file = list(pathlib.Path('tmp').glob('partitions_*.bin'))
+            if len(file):
+                self.partition_pathtext.SetValue(str(file[0].absolute()))
+                self.PARTITIONFILE_SELECTED = True
+                self.partitionDFUCheckbox.SetValue(True)
+
+            # Search if spiffs file exist
+            file = list(pathlib.Path('tmp').glob('spiffs_*.bin'))
+            if len(file):
+                self.spiffs_pathtext.SetValue(str(file[0].absolute()))
+                self.SPIFFSFILE_SELECTED = True
+                self.spiffsDFUCheckbox.SetValue(True)
+
+            # Search if bootloader file exist
+            file = list(pathlib.Path('tmp').glob('bootloader_*.bin'))
+            if len(file):
+                self.bootloader_pathtext.SetValue(str(file[0].absolute()))
+                self.BOOTLOADERFILE_SELECTED = True
+                self.bootloaderDFUCheckbox.SetValue(True)
+
+        except:
+            wx.MessageDialog(self, 'Error loading zip file', caption='Error')
+
+    def clean_options(self):
+        if pathlib.Path('tmp').exists():
+            shutil.rmtree('tmp')
+
     ################################################################
     #                    ESPTOOL FUNCTIONS                         #
     ################################################################
@@ -445,6 +514,8 @@ def main():
     window.Show()
 
     app.MainLoop()
+
+    window.clean_options()
 
 if __name__ == '__main__':
     main()
