@@ -39,6 +39,9 @@ class RedirectText:
     def flush(self):
         None
 
+    def isatty(self):
+        None
+
 class dfuTool(wx.Frame):
 
     ################################################################
@@ -48,8 +51,8 @@ class dfuTool(wx.Frame):
         super(dfuTool, self).__init__(parent, title=title)
 
         self.baudrates = ['9600', '57600', '74880', '115200', '230400', '460800', '921600']
-        self.SetSize(800,550)
-        self.SetMinSize(wx.Size(800,500))
+        self.SetSize(800,700)
+        self.SetMinSize(wx.Size(800,700))
         self.Centre()
         self.initFlags()
         self.initUI()
@@ -75,6 +78,7 @@ class dfuTool(wx.Frame):
         devices = self.list_serial_devices()
         self.serialChoice = wx.Choice(self.serialPanel, choices=devices)
         self.serialChoice.Bind(wx.EVT_CHOICE, self.on_serial_list_select)
+        self.serialChoice.Select(0)
         serialhbox.Add(self.serialChoice,3,wx.ALL|wx.ALIGN_CENTER_VERTICAL,20)
 
         self.scanButton = wx.Button(parent=self.serialPanel, label='Rescan Ports')
@@ -245,7 +249,7 @@ class dfuTool(wx.Frame):
         self.consolePanel = wx.TextCtrl(self.mainPanel, style=wx.TE_MULTILINE|wx.TE_READONLY)
         sys.stdout = RedirectText(self.consolePanel)
 
-        vbox.Add(self.consolePanel,5, wx.ALL|wx.EXPAND, 20)
+        vbox.Add(self.consolePanel,7, wx.ALL|wx.EXPAND, 20)
         ################################################################
         #                ASSOCIATE PANELS TO SIZERS                    #
         ################################################################
