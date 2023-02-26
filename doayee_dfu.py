@@ -120,6 +120,16 @@ class dfuTool(wx.Frame):
 
         vbox.Add(self.baudPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
+        #                   BEGIN ERASE BUTTON GUI                     #
+        ################################################################
+        self.eraseButton = wx.Button(parent=self.mainPanel, label='Erase ESP')
+        self.eraseButton.Bind(wx.EVT_BUTTON, self.on_erase_button)
+
+        self.eraseWarning= wx.StaticText(self.mainPanel,label = "WARNING: Erasing is not mandatory to flash a new app, but if you do, you must reflash ALL files.", style = wx.ALIGN_LEFT)
+
+        vbox.Add(self.eraseButton,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
+        vbox.Add(self.eraseWarning,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
+        ################################################################
         #                   BEGIN PROJECT FILE SELECT GUI              #
         ################################################################
         self.projectPanel = wx.Panel(self.mainPanel)
@@ -136,16 +146,6 @@ class dfuTool(wx.Frame):
         projecthbox.Add(self.projectButton, 0, wx.LEFT, 10)
 
         vbox.Add(self.projectPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
-        ################################################################
-        #                   BEGIN ERASE BUTTON GUI                     #
-        ################################################################
-        self.eraseButton = wx.Button(parent=self.mainPanel, label='Erase ESP')
-        self.eraseButton.Bind(wx.EVT_BUTTON, self.on_erase_button)
-
-        self.eraseWarning= wx.StaticText(self.mainPanel,label = "WARNING: Erasing is not mandatory to flash a new app, but if you do, you must reflash ALL files.", style = wx.ALIGN_LEFT)
-
-        vbox.Add(self.eraseButton,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
-        vbox.Add(self.eraseWarning,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
         ################################################################
         #                   BEGIN APP DFU FILE GUI                     #
         ################################################################
@@ -337,6 +337,9 @@ class dfuTool(wx.Frame):
             self.PROJFILE_SELECTED = True
 
         self.projectText.SetValue(os.path.abspath(path))
+
+        self.clean_options()
+
         #load settings
         self.load_options()
 
@@ -538,7 +541,7 @@ class dfuTool(wx.Frame):
 def main():
 
     app = wx.App()
-    window = dfuTool(None, title='ESP32 Flash Programming Tool')
+    window = dfuTool(None, title='ESP Flasher Programming Tool')
     window.Show()
 
     app.MainLoop()
