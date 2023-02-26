@@ -62,7 +62,7 @@ class dfuTool(wx.Frame):
         # Create temporary directory for extract zip files
         self.tempDir = tempfile.mkdtemp(prefix="ESP_flasher_")
 
-        print('ESP32 Firmware Flash tool')
+        print('ESP Flasher Programming tool')
         print('--------------------------------------------')
 
     def initUI(self):
