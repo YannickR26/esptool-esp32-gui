@@ -126,7 +126,7 @@ class dfuTool(wx.Frame):
         projecthbox = wx.BoxSizer(wx.HORIZONTAL)
 
         self.projectdesc = wx.StaticText(self.projectPanel,label = "Zip file:", style = wx.ALIGN_CENTRE)
-        projecthbox.Add(self.projectdesc, 0, wx.RIGHT, 10)
+        projecthbox.Add(self.projectdesc, 1, wx.RIGHT, 10)
 
         self.projectText = wx.TextCtrl(parent=self.projectPanel, value='No file selected')
         self.projectText.SetEditable(False)
@@ -135,7 +135,7 @@ class dfuTool(wx.Frame):
         self.projectButton.Bind(wx.EVT_BUTTON, self.on_project_browse_button)        
         projecthbox.Add(self.projectButton, 0, wx.LEFT, 10)
 
-        vbox.Add(self.projectPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
+        vbox.Add(self.projectPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
         ################################################################
         #                   BEGIN ERASE BUTTON GUI                     #
         ################################################################
@@ -144,8 +144,8 @@ class dfuTool(wx.Frame):
 
         self.eraseWarning= wx.StaticText(self.mainPanel,label = "WARNING: Erasing is not mandatory to flash a new app, but if you do, you must reflash ALL files.", style = wx.ALIGN_LEFT)
 
-        vbox.Add(self.eraseButton,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
-        vbox.Add(self.eraseWarning,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
+        vbox.Add(self.eraseButton,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
+        vbox.Add(self.eraseWarning,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
         ################################################################
         #                   BEGIN APP DFU FILE GUI                     #
         ################################################################
