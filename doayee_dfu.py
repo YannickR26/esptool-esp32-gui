@@ -4,6 +4,7 @@ import threading
 import serial.tools.list_ports
 import os
 import esptool
+import tempfile
 from zipfile import ZipFile
 from serial import SerialException
 from esptool import FatalError
@@ -57,6 +58,9 @@ class dfuTool(wx.Frame):
         self.initFlags()
         self.initUI()
         self.ESPTOOLARG_BAUD = self.ESPTOOLARG_BAUD # this default is regrettably loaded as part of the initUI process
+
+        # Create temporary directory for extract zip files
+        self.tempDir = tempfile.mkdtemp(prefix="ESP_flasher_")
 
         print('ESP32 Firmware Flash tool')
         print('--------------------------------------------')
@@ -438,42 +442,42 @@ class dfuTool(wx.Frame):
             with ZipFile(self.projectText.GetValue(), 'r') as zip:
                 print("Open zip file...")
                 zip.printdir()
-                zip.extractall('tmp')
+                zip.extractall(str(self.tempDir))
 
             # Search if firmware file exist
-            file = list(pathlib.Path('tmp').glob('firmware_*.bin'))
+            file = list(pathlib.Path(self.tempDir).glob('firmware_*.bin'))
             if len(file):
-                self.app_pathtext.SetValue(str(file[0].absolute()))
+                self.app_pathtext.SetValue(str(file[0].name))
                 self.APPFILE_SELECTED = True
                 self.appDFUCheckbox.SetValue(True)
 
             # Search if partitions file exist
-            file = list(pathlib.Path('tmp').glob('partitions_*.bin'))
+            file = list(pathlib.Path(self.tempDir).glob('partitions_*.bin'))
             if len(file):
-                self.partition_pathtext.SetValue(str(file[0].absolute()))
+                self.partition_pathtext.SetValue(str(file[0].name))
                 self.PARTITIONFILE_SELECTED = True
                 self.partitionDFUCheckbox.SetValue(True)
 
             # Search if spiffs file exist
-            file = list(pathlib.Path('tmp').glob('spiffs_*.bin'))
+            file = list(pathlib.Path(self.tempDir).glob('spiffs_*.bin'))
             if len(file):
-                self.spiffs_pathtext.SetValue(str(file[0].absolute()))
+                self.spiffs_pathtext.SetValue(str(file[0].name))
                 self.SPIFFSFILE_SELECTED = True
                 self.spiffsDFUCheckbox.SetValue(True)
 
             # Search if bootloader file exist
-            file = list(pathlib.Path('tmp').glob('bootloader_*.bin'))
+            file = list(pathlib.Path(self.tempDir).glob('bootloader_*.bin'))
             if len(file):
-                self.bootloader_pathtext.SetValue(str(file[0].absolute()))
+                self.bootloader_pathtext.SetValue(str(file[0].name))
                 self.BOOTLOADERFILE_SELECTED = True
                 self.bootloaderDFUCheckbox.SetValue(True)
 
-        except:
+        except Exception as e:
+            print(e)
             wx.MessageDialog(self, 'Error loading zip file', caption='Error')
 
     def clean_options(self):
-        if pathlib.Path('tmp').exists():
-            shutil.rmtree('tmp')
+        shutil.rmtree(self.tempDir)
 
     ################################################################
     #                    ESPTOOL FUNCTIONS                         #
@@ -491,16 +495,16 @@ class dfuTool(wx.Frame):
             cmd.append('write_flash')
             if self.bootloaderDFUCheckbox.GetValue():
                 cmd.append(self.bootloaderAddrText.GetValue())
-                cmd.append(self.bootloader_pathtext.GetValue())
+                cmd.append(str(pathlib.Path(self.tempDir) / self.bootloader_pathtext.GetValue()))
             if self.appDFUCheckbox.GetValue():
                 cmd.append(self.appAddrText.GetValue())
-                cmd.append(self.app_pathtext.GetValue())
+                cmd.append(str(pathlib.Path(self.tempDir) / self.app_pathtext.GetValue()))
             if self.spiffsDFUCheckbox.GetValue():
                 cmd.append(self.spiffsAddrText.GetValue())
-                cmd.append(self.spiffs_pathtext.GetValue())
+                cmd.append(str(pathlib.Path(self.tempDir) / self.spiffs_pathtext.GetValue()))
             if self.partitionDFUCheckbox.GetValue():
                 cmd.append(self.partitionAddrText.GetValue())
-                cmd.append(self.partition_pathtext.GetValue())
+                cmd.append(str(pathlib.Path(self.tempDir) / self.partition_pathtext.GetValue()))
 
         return cmd
 
@@ -511,14 +515,18 @@ class dfuTool(wx.Frame):
         cmd = self.esptool_cmd_builder()
         try:
             esptool.main(cmd)
-            print('esptool execution completed')
+            print('')
+            print('----------------------------------')
+            print('--- FINISHED SUCCESSFULLY ---')
+            print('----------------------------------')
         except esptool.FatalError as e:
             print(e)
             pass
         except serial.SerialException as e:
             print(e)
             pass
-        except:
+        except Exception as e:
+            print(e)
             print('unexpected error, maybe you chose invalid files, or files which overlap')
             pass
 
