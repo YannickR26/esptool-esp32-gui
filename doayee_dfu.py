@@ -12,6 +12,8 @@ import argparse
 import pathlib
 import shutil
 
+VERSION = 'V1.1'
+
 # this class credit marcelstoer
 # See discussion at http://stackoverflow.com/q/41101897/131929
 class RedirectText:
@@ -53,6 +55,8 @@ class dfuTool(wx.Frame):
 
         self.baudrates = ['115200', '230400', '460800', '921600']
         self.chip = ['auto', 'esp8266', 'esp32', 'esp32s2','esp32s3', 'esp32c2', 'esp32c3', 'esp32c6']
+        self.SetSize(800,650)
+        self.SetMinSize(wx.Size(800,650))
         self.Centre()
         self.initFlags()
         self.initUI()
@@ -532,18 +536,24 @@ class dfuTool(wx.Frame):
 
         cmd = self.esptool_cmd_builder()
         try:
+            print('')
+            print('--- FLASH STARTED ---')
             esptool.main(cmd)
             print('')
             print('----------------------------------')
             print('--- FINISHED SUCCESSFULLY ---')
             print('----------------------------------')
         except esptool.FatalError as e:
+            print('')
+            print('--- ERROR ---')
             print(e)
             pass
         except serial.SerialException as e:
+            print('--- ERROR ---')
             print(e)
             pass
         except Exception as e:
+            print('--- ERROR ---')
             print(e)
             print('unexpected error, maybe you chose invalid files, or files which overlap')
             pass
@@ -565,7 +575,7 @@ class dfuTool(wx.Frame):
 def main():
 
     app = wx.App()
-    window = dfuTool(None, title='ESP Flasher Programming Tool')
+    window = dfuTool(None, title='ESP Flasher Programming Tool - ' + VERSION)
     window.Show()
 
     app.MainLoop()
