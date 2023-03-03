@@ -136,10 +136,10 @@ class dfuTool(wx.Frame):
 
         self.projectText = wx.TextCtrl(parent=self.projectPanel, value='No file selected')
         self.projectText.SetEditable(False)
-        projecthbox.Add(self.projectText, 10)
-        self.projectButton = wx.Button(parent=self.projectPanel, label='Browse...')
-        self.projectButton.Bind(wx.EVT_BUTTON, self.on_project_browse_button)        
-        projecthbox.Add(self.projectButton, 0, wx.LEFT, 10)
+        projecthbox.Add(self.projectText, wx.ALIGN_CENTER_VERTICAL)
+        self.project_browseButton = wx.Button(parent=self.projectPanel, label='Browse...')
+        self.project_browseButton.Bind(wx.EVT_BUTTON, self.on_project_browse_button)        
+        projecthbox.Add(self.project_browseButton, 0, wx.LEFT, 10)
 
         vbox.Add(self.projectPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
         ################################################################
@@ -162,9 +162,9 @@ class dfuTool(wx.Frame):
         self.app_pathtext.SetEditable(False)
         hbox.Add(self.app_pathtext,20,wx.EXPAND|wx.ALL,10)
 
-        self.browseButton = wx.Button(parent=self.appDFUpanel, label='Browse...')
-        self.browseButton.Bind(wx.EVT_BUTTON, self.on_app_browse_button)
-        hbox.Add(self.browseButton, 0, wx.ALL, 10)
+        self.app_browseButton = wx.Button(parent=self.appDFUpanel, label='Browse...')
+        self.app_browseButton.Bind(wx.EVT_BUTTON, self.on_app_browse_button)
+        hbox.Add(self.app_browseButton, 0, wx.ALL, 10)
 
         vbox.Add(self.appDFUpanel,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
@@ -185,9 +185,9 @@ class dfuTool(wx.Frame):
         self.partition_pathtext.SetEditable(False)
         partitionhbox.Add(self.partition_pathtext,20,wx.EXPAND|wx.ALL,10)
 
-        self.browseButton = wx.Button(parent=self.partitionDFUpanel, label='Browse...')
-        self.browseButton.Bind(wx.EVT_BUTTON, self.on_partition_browse_button)
-        partitionhbox.Add(self.browseButton, 0, wx.ALL, 10)
+        self.partition_browseButton = wx.Button(parent=self.partitionDFUpanel, label='Browse...')
+        self.partition_browseButton.Bind(wx.EVT_BUTTON, self.on_partition_browse_button)
+        partitionhbox.Add(self.partition_browseButton, 0, wx.ALL, 10)
 
         vbox.Add(self.partitionDFUpanel,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
@@ -208,9 +208,9 @@ class dfuTool(wx.Frame):
         self.spiffs_pathtext.SetEditable(False)
         spiffshbox.Add(self.spiffs_pathtext,20,wx.EXPAND|wx.ALL,10)
 
-        self.browseButton = wx.Button(parent=self.spiffsDFUpanel, label='Browse...')
-        self.browseButton.Bind(wx.EVT_BUTTON, self.on_spiffs_browse_button)
-        spiffshbox.Add(self.browseButton, 0, wx.ALL, 10)
+        self.spiffs_browseButton = wx.Button(parent=self.spiffsDFUpanel, label='Browse...')
+        self.spiffs_browseButton.Bind(wx.EVT_BUTTON, self.on_spiffs_browse_button)
+        spiffshbox.Add(self.spiffs_browseButton, 0, wx.ALL, 10)
 
         vbox.Add(self.spiffsDFUpanel,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
@@ -231,9 +231,9 @@ class dfuTool(wx.Frame):
         self.bootloader_pathtext.SetEditable(False)
         bootloaderhbox.Add(self.bootloader_pathtext,20,wx.EXPAND|wx.ALL,10)
 
-        self.browseButton = wx.Button(parent=self.bootloaderDFUpanel, label='Browse...')
-        self.browseButton.Bind(wx.EVT_BUTTON, self.on_bootloader_browse_button)
-        bootloaderhbox.Add(self.browseButton, 0, wx.ALL, 10)
+        self.bootloader_browseButton = wx.Button(parent=self.bootloaderDFUpanel, label='Browse...')
+        self.bootloader_browseButton.Bind(wx.EVT_BUTTON, self.on_bootloader_browse_button)
+        bootloaderhbox.Add(self.bootloader_browseButton, 0, wx.ALL, 10)
 
         vbox.Add(self.bootloaderDFUpanel,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
@@ -521,6 +521,15 @@ class dfuTool(wx.Frame):
         '''Handles the interaction with esptool'''
         self.ESPTOOL_BUSY = True
 
+        # Disable all button
+        self.eraseButton.Disable()
+        self.project_browseButton.Disable()
+        self.app_browseButton.Disable()
+        self.partition_browseButton.Disable()
+        self.spiffs_browseButton.Disable()
+        self.bootloader_browseButton.Disable()
+        self.flashButton.Disable()
+
         cmd = self.esptool_cmd_builder()
         try:
             esptool.main(cmd)
@@ -542,6 +551,15 @@ class dfuTool(wx.Frame):
         self.ESPTOOL_BUSY = False
         self.ESPTOOLMODE_ERASE = False
         self.ESPTOOLMODE_FLASH = False
+
+        # Enable all button
+        self.eraseButton.Enable()
+        self.project_browseButton.Enable()
+        self.app_browseButton.Enable()
+        self.partition_browseButton.Enable()
+        self.spiffs_browseButton.Enable()
+        self.bootloader_browseButton.Enable()
+        self.flashButton.Enable()
 
 
 def main():
