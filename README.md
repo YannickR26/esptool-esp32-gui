@@ -52,7 +52,7 @@ STUBS_DIR = os.path.join(application_path, "./targets/stub_flasher/")
 To build exe go to the folder with the .py files and run
 
 ```
-pyinstaller --icon=logo.ico --windowed --add-data=".venv/Lib/site-packages/esptool/targets/stub_flasher/*;targets/stub_flasher/" --onefile --name "ESP Flasher" doayee_dfu.py
+pyinstaller --icon=logo.ico --windowed --add-data=".venv/Lib/site-packages/esptool/targets/stub_flasher/*;targets/stub_flasher/" --onefile --name "ESP_Flasher" doayee_dfu.py
 ```
 
 The exe file will be created in a folder "/dist"
