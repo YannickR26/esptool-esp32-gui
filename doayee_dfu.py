@@ -51,9 +51,8 @@ class dfuTool(wx.Frame):
     def __init__(self, parent, title):
         super(dfuTool, self).__init__(parent, title=title)
 
-        self.baudrates = ['9600', '57600', '74880', '115200', '230400', '460800', '921600']
-        self.SetSize(800,700)
-        self.SetMinSize(wx.Size(800,700))
+        self.baudrates = ['115200', '230400', '460800', '921600']
+        self.chip = ['auto', 'esp8266', 'esp32', 'esp32s2','esp32s3', 'esp32c2', 'esp32c3', 'esp32c6']
         self.Centre()
         self.initFlags()
         self.initUI()
@@ -101,7 +100,7 @@ class dfuTool(wx.Frame):
         baudhbox = wx.BoxSizer(wx.HORIZONTAL)
 
         self.baudtext = wx.StaticText(self.baudPanel,label = "Baud Rate:", style = wx.ALIGN_CENTRE)
-        baudhbox.Add(self.baudtext, 1)
+        baudhbox.Add(self.baudtext, 1, wx.ALIGN_CENTER_VERTICAL)
 
         # create a button for each baud rate
         for index, baud in enumerate(self.baudrates):
@@ -111,24 +110,21 @@ class dfuTool(wx.Frame):
             baudChoice = wx.RadioButton(self.baudPanel,style=style,label=baud, name=baud)
             baudChoice.Bind(wx.EVT_RADIOBUTTON, self.on_baud_selected)
             baudChoice.baudrate = baud
-            baudhbox.Add(baudChoice, 1)
+            baudhbox.Add(baudChoice, 1, wx.ALIGN_CENTER_VERTICAL)
 
             # set the default up
             if index == len(self.baudrates) - 1:
                 baudChoice.SetValue(True)
                 self.ESPTOOLARG_BAUD = baudChoice.baudrate
 
-        vbox.Add(self.baudPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
-        ################################################################
-        #                   BEGIN ERASE BUTTON GUI                     #
-        ################################################################
-        self.eraseButton = wx.Button(parent=self.mainPanel, label='Erase ESP')
-        self.eraseButton.Bind(wx.EVT_BUTTON, self.on_erase_button)
+        self.chiptext = wx.StaticText(self.baudPanel,label = "Chip:", style = wx.ALIGN_CENTRE)
+        baudhbox.Add(self.chiptext, 1, wx.ALIGN_CENTER_VERTICAL)
 
-        self.eraseWarning= wx.StaticText(self.mainPanel,label = "WARNING: Erasing is not mandatory to flash a new app, but if you do, you must reflash ALL files.", style = wx.ALIGN_LEFT)
+        self.chipChoice = wx.Choice(self.baudPanel, choices=self.chip)
+        self.chipChoice.Select(2)
+        baudhbox.Add(self.chipChoice, 1, wx.ALIGN_CENTER_VERTICAL)
 
-        vbox.Add(self.eraseButton,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
-        vbox.Add(self.eraseWarning,1,wx.LEFT|wx.RIGHT|wx.EXPAND, 40)
+        vbox.Add(self.baudPanel,1, wx.LEFT|wx.RIGHT|wx.BOTTOM|wx.EXPAND, 20)
         ################################################################
         #                   BEGIN PROJECT FILE SELECT GUI              #
         ################################################################
@@ -243,10 +239,18 @@ class dfuTool(wx.Frame):
         ################################################################
         #                   BEGIN FLASH BUTTON GUI                     #
         ################################################################
-        self.flashButton = wx.Button(parent=self.mainPanel, label='Flash ESP')
-        self.flashButton.Bind(wx.EVT_BUTTON, self.on_flash_button)
+        self.buttonPanel = wx.Panel(self.mainPanel)
+        buttonhbox = wx.BoxSizer(wx.HORIZONTAL)
 
-        vbox.Add(self.flashButton,2, wx.TOP|wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
+        self.eraseButton = wx.Button(parent=self.buttonPanel, label='Erase ESP')
+        self.eraseButton.Bind(wx.EVT_BUTTON, self.on_erase_button)
+        buttonhbox.Add(self.eraseButton, 1, wx.RIGHT|wx.EXPAND, 40)
+
+        self.flashButton = wx.Button(parent=self.buttonPanel, label='Flash ESP')
+        self.flashButton.Bind(wx.EVT_BUTTON, self.on_flash_button)
+        buttonhbox.Add(self.flashButton, 3, wx.LEFT|wx.EXPAND, 40)
+
+        vbox.Add(self.buttonPanel,2, wx.TOP|wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
         #                   BEGIN CONSOLE OUTPUT GUI                   #
         ################################################################
@@ -258,6 +262,7 @@ class dfuTool(wx.Frame):
         #                ASSOCIATE PANELS TO SIZERS                    #
         ################################################################
         self.appDFUpanel.SetSizer(hbox)
+        self.buttonPanel.SetSizer(buttonhbox)
         self.partitionDFUpanel.SetSizer(partitionhbox)
         self.spiffsDFUpanel.SetSizer(spiffshbox)
         self.bootloaderDFUpanel.SetSizer(bootloaderhbox)
@@ -488,6 +493,7 @@ class dfuTool(wx.Frame):
     def esptool_cmd_builder(self):
         '''Build the command that we would give esptool on the CLI'''
         cmd = ['--baud',self.ESPTOOLARG_BAUD]
+        cmd = cmd + ['--chip', self.chipChoice.GetString(self.chipChoice.GetSelection())]
 
         if self.ESPTOOLARG_AUTOSERIAL == False:
             cmd = cmd + ['--port',self.serialChoice.GetString(self.serialChoice.GetSelection())]
