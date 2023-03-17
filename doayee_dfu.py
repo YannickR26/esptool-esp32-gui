@@ -499,6 +499,8 @@ class dfuTool(wx.Frame):
         '''Build the command that we would give esptool on the CLI'''
         cmd = ['--baud',self.ESPTOOLARG_BAUD]
         cmd = cmd + ['--chip', self.chipChoice.GetString(self.chipChoice.GetSelection())]
+        cmd = cmd + ['--before', 'default_reset']
+        cmd = cmd + ['--after', 'hard_reset']
 
         if self.ESPTOOLARG_AUTOSERIAL == False:
             cmd = cmd + ['--port',self.serialChoice.GetString(self.serialChoice.GetSelection())]
@@ -507,18 +509,20 @@ class dfuTool(wx.Frame):
             cmd.append('erase_flash')
         elif self.ESPTOOLMODE_FLASH:
             cmd.append('write_flash')
+            cmd = cmd + ['--flash_mode', 'dio']
+            cmd = cmd + ['--flash_freq', '40m']
             if self.bootloaderDFUCheckbox.GetValue():
                 cmd.append(self.bootloaderAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.bootloader_pathtext.GetValue()))
+            if self.partitionDFUCheckbox.GetValue():
+                cmd.append(self.partitionAddrText.GetValue())
+                cmd.append(str(pathlib.Path(self.tempDir) / self.partition_pathtext.GetValue()))
             if self.appDFUCheckbox.GetValue():
                 cmd.append(self.appAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.app_pathtext.GetValue()))
             if self.spiffsDFUCheckbox.GetValue():
                 cmd.append(self.spiffsAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.spiffs_pathtext.GetValue()))
-            if self.partitionDFUCheckbox.GetValue():
-                cmd.append(self.partitionAddrText.GetValue())
-                cmd.append(str(pathlib.Path(self.tempDir) / self.partition_pathtext.GetValue()))
 
         return cmd
 
