@@ -307,6 +307,7 @@ class dfuTool(wx.Frame):
         self.serialChoice.Clear()
         for device in devices:
             self.serialChoice.Append(device)
+        self.serialChoice.Select(0)
         print('serial choices updated')
 
     def on_serial_list_select(self,event):
