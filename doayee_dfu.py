@@ -505,8 +505,6 @@ class dfuTool(wx.Frame):
             cmd.append('erase_flash')
         elif self.ESPTOOLMODE_FLASH:
             cmd.append('write_flash')
-            cmd = cmd + ['--flash_mode', 'dio']
-            cmd = cmd + ['--flash_freq', '40m']
             if self.bootloaderDFUCheckbox.GetValue():
                 cmd.append(self.bootloaderAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.bootloader_pathtext.GetValue()))
