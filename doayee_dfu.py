@@ -159,7 +159,6 @@ class dfuTool(wx.Frame):
         hbox.Add(self.appDFUCheckbox,0,wx.EXPAND|wx.ALL,10)
 
         self.appAddrText = wx.TextCtrl(parent=self.appDFUpanel, value='0x20000')
-        self.appAddrText.SetEditable(False)
         hbox.Add(self.appAddrText,1,wx.EXPAND|wx.ALL,10)
 
         self.app_pathtext = wx.TextCtrl(parent=self.appDFUpanel,value = "No File Selected")
@@ -182,7 +181,6 @@ class dfuTool(wx.Frame):
         partitionhbox.Add(self.partitionDFUCheckbox,0,wx.EXPAND|wx.ALL,10)
 
         self.partitionAddrText = wx.TextCtrl(parent=self.partitionDFUpanel, value='0x8000')
-        self.partitionAddrText.SetEditable(False)
         partitionhbox.Add(self.partitionAddrText,1,wx.EXPAND|wx.ALL,10)
 
         self.partition_pathtext = wx.TextCtrl(parent=self.partitionDFUpanel,value = "No File Selected")
@@ -205,7 +203,6 @@ class dfuTool(wx.Frame):
         spiffshbox.Add(self.spiffsDFUCheckbox,0,wx.EXPAND|wx.ALL,10)
 
         self.spiffsAddrText = wx.TextCtrl(parent=self.spiffsDFUpanel, value='0x290000')
-        self.spiffsAddrText.SetEditable(False)
         spiffshbox.Add(self.spiffsAddrText,1,wx.EXPAND|wx.ALL,10)
 
         self.spiffs_pathtext = wx.TextCtrl(parent=self.spiffsDFUpanel,value = "No File Selected")
@@ -228,7 +225,6 @@ class dfuTool(wx.Frame):
         bootloaderhbox.Add(self.bootloaderDFUCheckbox,0,wx.EXPAND|wx.ALL,10)
 
         self.bootloaderAddrText = wx.TextCtrl(parent=self.bootloaderDFUpanel, value='0x1000')
-        self.bootloaderAddrText.SetEditable(False)
         bootloaderhbox.Add(self.bootloaderAddrText,1,wx.EXPAND|wx.ALL,10)
 
         self.bootloader_pathtext = wx.TextCtrl(parent=self.bootloaderDFUpanel,value = "No File Selected")
