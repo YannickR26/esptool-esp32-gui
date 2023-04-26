@@ -155,7 +155,6 @@ class dfuTool(wx.Frame):
 
         self.appDFUCheckbox = wx.CheckBox(parent=self.appDFUpanel,label="Application",size=(100,5))
         self.appDFUCheckbox.SetValue(True)
-        self.appDFUCheckbox.Disable()
         hbox.Add(self.appDFUCheckbox,0,wx.EXPAND|wx.ALL,10)
 
         self.appAddrText = wx.TextCtrl(parent=self.appDFUpanel, value='0x20000')
