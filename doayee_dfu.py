@@ -327,6 +327,13 @@ class dfuTool(wx.Frame):
         if self.ESPTOOL_BUSY:
             print('currently busy')
             return
+        
+        dialog = wx.MessageDialog(self.mainPanel, 'You want to \"Erase ESP\", which means you should reflash all files. Are you sure you want to continue? ','Warning',wx.YES_NO|wx.ICON_EXCLAMATION)
+        ret = dialog.ShowModal()
+
+        if ret == wx.ID_NO:
+            return
+                
         self.ESPTOOLMODE_ERASE = True
         self.ESPTOOL_ERASE_USED = True
         t = threading.Thread(target=self.esptoolRunner, daemon=True)
@@ -414,17 +421,13 @@ class dfuTool(wx.Frame):
             print('no bootloader selected for flash')
             return
         else:
-            # if the erase_flash has been used but we have not elected to upload all the required files
-            if self.ESPTOOL_ERASE_USED & (~self.appDFUCheckbox.GetValue() | ~self.partitionDFUCheckbox.GetValue() | ~self.spiffsDFUCheckbox.GetValue()  | ~self.bootloaderDFUCheckbox.GetValue()):
-                dialog = wx.MessageDialog(self.mainPanel, 'ESP32DFU detected use of \"Erase ESP\", which means you should reflash all files. Are you sure you want to continue? ','Warning',wx.YES_NO|wx.ICON_EXCLAMATION)
-                ret = dialog.ShowModal()
-
-                if ret == wx.ID_NO:
-                    return
-
             # if we're uploading everything, clear the fact that erase_flash has been used
-            if self.appDFUCheckbox.GetValue() & self.partitionDFUCheckbox.GetValue() & self.spiffsDFUCheckbox.GetValue() & self.bootloaderDFUCheckbox.GetValue():
-                self.ESPTOOL_ERASE_USED = False
+            if  not self.appDFUCheckbox.IsChecked() and \
+                not self.partitionDFUCheckbox.IsChecked() and \
+                not self.spiffsDFUCheckbox.IsChecked() and \
+                not self.bootloaderDFUCheckbox.IsChecked():
+                print('nothing to do !')
+                return
 
             self.ESPTOOLMODE_FLASH = True
             t = threading.Thread(target=self.esptoolRunner, daemon=True)
