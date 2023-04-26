@@ -408,16 +408,16 @@ class dfuTool(wx.Frame):
             print('currently busy')
             return
         # handle cases where a flash has been requested but no file provided
-        elif self.appDFUCheckbox.GetValue() & ~self.APPFILE_SELECTED:
+        elif self.appDFUCheckbox.IsChecked() & ~self.APPFILE_SELECTED:
             print('no app selected for flash')
             return
-        elif self.partitionDFUCheckbox.GetValue() & ~self.PARTITIONFILE_SELECTED:
+        elif self.partitionDFUCheckbox.IsChecked() & ~self.PARTITIONFILE_SELECTED:
             print('no partition table selected for flash')
             return
-        elif self.spiffsDFUCheckbox.GetValue() & ~self.SPIFFSFILE_SELECTED:
+        elif self.spiffsDFUCheckbox.IsChecked() & ~self.SPIFFSFILE_SELECTED:
             print('no spiffs file selected for flash')
             return        
-        elif self.bootloaderDFUCheckbox.GetValue() & ~self.BOOTLOADERFILE_SELECTED:
+        elif self.bootloaderDFUCheckbox.IsChecked() & ~self.BOOTLOADERFILE_SELECTED:
             print('no bootloader selected for flash')
             return
         else:
@@ -507,16 +507,16 @@ class dfuTool(wx.Frame):
             cmd.append('erase_flash')
         elif self.ESPTOOLMODE_FLASH:
             cmd.append('write_flash')
-            if self.bootloaderDFUCheckbox.GetValue():
+            if self.bootloaderDFUCheckbox.IsChecked():
                 cmd.append(self.bootloaderAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.bootloader_pathtext.GetValue()))
-            if self.partitionDFUCheckbox.GetValue():
+            if self.partitionDFUCheckbox.IsChecked():
                 cmd.append(self.partitionAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.partition_pathtext.GetValue()))
-            if self.appDFUCheckbox.GetValue():
+            if self.appDFUCheckbox.IsChecked():
                 cmd.append(self.appAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.app_pathtext.GetValue()))
-            if self.spiffsDFUCheckbox.GetValue():
+            if self.spiffsDFUCheckbox.IsChecked():
                 cmd.append(self.spiffsAddrText.GetValue())
                 cmd.append(str(pathlib.Path(self.tempDir) / self.spiffs_pathtext.GetValue()))
 
