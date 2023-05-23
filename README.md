@@ -2,7 +2,7 @@
 
 A standalone GUI application for ESP firmware flashing compatible with Windows and macOS.
 
-**Note:** Currently using esptool v4.5
+**Note:** Currently using esptool v4.5.1
 
 ![gui](/wingui.png "Description goes here")
 
@@ -19,7 +19,7 @@ If the partition table has not been changed, it only needs to be reflashed when 
 
 ## Running From Source
 
-**Note:** Currently using esptool v4.5
+**Note:** Currently using esptool v4.5.1
 
 1. Install the project dependencies using your python3 package manager
 2. Run the doayee_dfu.py script in python3
