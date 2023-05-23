@@ -49,6 +49,8 @@ else:
 STUBS_DIR = os.path.join(application_path, "./targets/stub_flasher/")
 ```
 
+Change the `DEFAULT_RESET_DELAY` to 0.2 in the reset.py file
+
 To build exe go to the folder with the .py files and run
 
 ```
