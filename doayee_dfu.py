@@ -12,7 +12,7 @@ import argparse
 import pathlib
 import shutil
 
-VERSION = 'V1.4'
+VERSION = 'V1.5'
 
 # this class credit marcelstoer
 # See discussion at http://stackoverflow.com/q/41101897/131929
