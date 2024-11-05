@@ -1,14 +1,13 @@
 import wx
 import sys
 import threading
+import serial
 import serial.tools.list_ports
+import time
 import os
 import esptool
 import tempfile
 from zipfile import ZipFile
-from serial import SerialException
-from esptool import FatalError
-import argparse
 import pathlib
 import shutil
 
@@ -95,6 +94,10 @@ class dfuTool(wx.Frame):
         self.serialAutoCheckbox = wx.CheckBox(parent=self.serialPanel,label="Auto-detect (slow)")
         self.serialAutoCheckbox.Bind(wx.EVT_CHECKBOX,self.on_serial_autodetect_check)
         serialhbox.Add(self.serialAutoCheckbox,2,wx.ALL|wx.ALIGN_CENTER_VERTICAL,20)
+
+        self.resetDeviceButton = wx.Button(parent=self.serialPanel,label="Reset device")
+        self.resetDeviceButton.Bind(wx.EVT_BUTTON,self.on_serial_reset_device)
+        serialhbox.Add(self.resetDeviceButton,1,wx.ALL|wx.ALIGN_CENTER_VERTICAL,20)
 
         vbox.Add(self.serialPanel,1, wx.LEFT|wx.RIGHT|wx.EXPAND, 20)
         ################################################################
@@ -304,6 +307,20 @@ class dfuTool(wx.Frame):
             self.serialChoice.Append(device)
         self.serialChoice.Select(0)
         print('serial choices updated')
+
+    def on_serial_reset_device(self, event):
+        try:
+            port = serial.Serial(self.serialChoice.GetString(self.serialChoice.GetSelection())) 
+            print('reset device connected on port ' + port.name)
+            port.setDTR(False)
+            port.setRTS(True)
+            time.sleep(0.1)
+            port.setRTS(True)
+            port.setDTR(True)
+            del port
+        except serial.SerialException as e:
+            print('--- ERROR ---')
+            print(e)
 
     def on_serial_list_select(self,event):
         port = self.serialChoice.GetString(self.serialChoice.GetSelection())
