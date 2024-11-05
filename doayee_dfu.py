@@ -11,7 +11,7 @@ from zipfile import ZipFile
 import pathlib
 import shutil
 
-VERSION = 'V1.5'
+VERSION = 'V1.6'
 
 # this class credit marcelstoer
 # See discussion at http://stackoverflow.com/q/41101897/131929
