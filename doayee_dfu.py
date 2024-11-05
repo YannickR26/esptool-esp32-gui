@@ -56,6 +56,7 @@ class dfuTool(wx.Frame):
         self.chip = ['auto', 'esp8266', 'esp32', 'esp32s2','esp32s3', 'esp32c2', 'esp32c3', 'esp32c6']
         self.SetSize(800,650)
         self.SetMinSize(wx.Size(800,650))
+        self.SetIcon(wx.Icon(wx.IconLocation(sys.executable, 0)))
         self.Centre()
         self.initFlags()
         self.initUI()
